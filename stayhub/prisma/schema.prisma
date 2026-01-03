@@ -1,0 +1,113 @@
+//Prisma ORM Klijent Konfiguracija
+generator client {
+  provider = "prisma-client-js"
+}
+
+//Konfiguracija izvora podataka za PostgreSQL bazu podataka
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+//Definicija modela za aplikaciju "Stayhub"
+
+//Enumeracije za uloge korisnika i status rezervacije
+//Enum (skraćeno od enumeration) je tip podatka koji dozvoljava samo unapred definisan skup vrednosti. 
+//Zamisli ga kao “listu dozvoljenih opcija”.
+enum UserRole {
+  BUYER
+  SELLER
+  ADMIN
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+
+// 1. MODEL USER:
+model User {
+  id       Int    @id @default(autoincrement())
+  name     String
+  email    String @unique
+  password String
+  userRole UserRole
+
+  // relacije iz PMOV-a:
+  // User sells Property (1 user -> 0..M properties)
+  properties Property[]
+
+  // User makes Reservation (1 user -> 0..M reservations)
+  reservations Reservation[]
+}
+
+// 2. MODEL PROPERTY:
+model Property {
+  id          Int    @id @default(autoincrement())
+  name        String
+  description String
+  image       String @db.VarChar(500)
+  price       Decimal @db.Decimal(10, 2)
+  rooms       Int
+
+  // sells: Property pripada jednom User-u, User ima vise Property-ja
+  sellerId Int
+  seller   User @relation(fields: [sellerId], references: [id])
+
+  // Location: 1 Location -> 1..M Property, a Property -> 1 Location
+  locationId Int
+  location   Location @relation(fields: [locationId], references: [id])
+
+  // Category: 1 Category -> 1..M Property, a Property -> 1 Category
+  categoryId Int
+  category   Category @relation(fields: [categoryId], references: [id])
+
+  // Property -> 0..M Reservation, Reservation -> 1 Property
+  reservations Reservation[]
+}
+
+// 3. MODEL RESERVATION:
+model Reservation {
+  id         Int      @id @default(autoincrement())
+  startDate  DateTime
+  endDate    DateTime
+  totalPrice Decimal  @db.Decimal(10, 2)
+  status     ReservationStatus
+
+  // makes: Reservation pripada jednom User-u, User ima vise Reservation-a
+  userId Int
+  user   User @relation(fields: [userId], references: [id])
+
+  // Reservation pripada jednom Property-ju
+  propertyId Int
+  property   Property @relation(fields: [propertyId], references: [id])
+
+  //Spreči duple rezervacije za isti objekat i isti period.
+  //Dodaj indexe na FK kolone radi performansi.
+  @@index([userId])
+  @@index([propertyId])
+  @@unique([propertyId, startDate, endDate])
+}
+
+// 4. MODEL LOCATION:
+model Location {
+  id      Int    @id @default(autoincrement())
+  address String
+  city    String
+
+  // 1 Location -> 1..M Property
+  properties Property[]
+}
+
+// 5. MODEL CATEGORY:
+model Category {
+  id          Int    @id @default(autoincrement())
+  name        String
+  description String
+
+  // 1 Category -> 1..M Property
+  properties Property[]
+}
+
