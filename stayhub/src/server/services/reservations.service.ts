@@ -114,3 +114,17 @@ export async function updateReservationStatusAsSeller(
     data: { status },
   });
 }
+
+export async function deleteReservationAsSeller(sellerId: number, reservationId: number) {
+  const res = await prisma.reservation.findUnique({
+    where: { id: reservationId },
+    include: { property: true },
+  });
+
+  if (!res) throw Object.assign(new Error("Rezervacija ne postoji."), { status: 404 });
+  if (res.property.sellerId !== sellerId) throw Object.assign(new Error("Zabranjeno."), { status: 403 });
+
+  await prisma.reservation.delete({ where: { id: reservationId } });
+  return { ok: true };
+}
+
