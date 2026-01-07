@@ -5,6 +5,7 @@ export type PropertyListQuery = {
   name?: string;
   city?: string;
   categoryId?: number;
+  sellerId?: number;
   minPrice?: number;
   maxPrice?: number;
   minRooms?: number;
@@ -37,25 +38,25 @@ export async function listProperties(q: PropertyListQuery) {
   const pageSize = clamp(q.pageSize ?? 10, 1, 50);
   const skip = (page - 1) * pageSize;
 
-  const where: Prisma.PropertyWhereInput = {
-    ...(q.name
-      ? { name: { contains: q.name.trim(), mode: "insensitive" } }
-      : {}),
-    ...(q.categoryId ? { categoryId: q.categoryId } : {}),
-    ...(q.minRooms ? { rooms: { gte: q.minRooms } } : {}),
-    ...(q.maxRooms ? { rooms: { lte: q.maxRooms } } : {}),
-    ...(q.minPrice || q.maxPrice
-      ? {
-          price: {
-            ...(q.minPrice ? { gte: new Prisma.Decimal(q.minPrice) } : {}),
-            ...(q.maxPrice ? { lte: new Prisma.Decimal(q.maxPrice) } : {}),
-          },
-        }
-      : {}),
-    ...(q.city
-      ? { location: { city: { contains: q.city.trim(), mode: "insensitive" } } }
-      : {}),
-  };
+ const where: Prisma.PropertyWhereInput = {
+  ...(q.sellerId ? { sellerId: q.sellerId } : {}),
+  ...(q.name ? { name: { contains: q.name.trim(), mode: "insensitive" } } : {}),
+  ...(q.categoryId ? { categoryId: q.categoryId } : {}),
+  ...(q.minRooms ? { rooms: { gte: q.minRooms } } : {}),
+  ...(q.maxRooms ? { rooms: { lte: q.maxRooms } } : {}),
+  ...(q.minPrice || q.maxPrice
+    ? {
+        price: {
+          ...(q.minPrice ? { gte: new Prisma.Decimal(q.minPrice) } : {}),
+          ...(q.maxPrice ? { lte: new Prisma.Decimal(q.maxPrice) } : {}),
+        },
+      }
+    : {}),
+  ...(q.city
+    ? { location: { city: { contains: q.city.trim(), mode: "insensitive" } } }
+    : {}),
+};
+
 
   const order: "asc" | "desc" = q.order === "desc" ? "desc" : "asc";
   const sortBy = q.sortBy ?? "name";

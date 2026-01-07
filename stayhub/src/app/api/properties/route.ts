@@ -16,7 +16,19 @@ export async function GET(req: Request) {
   try {
     const url = new URL(req.url);
 
+    const mine = url.searchParams.get("mine") === "1";
+
+    // Ako je mine=1, onda samo SELLER sme i vraćamo samo njegove nekretnine.
+    let sellerId: number | undefined = undefined;
+
+    if (mine) {
+      const user = await requireAuth();
+      requireRole(user.role, ["SELLER"]);
+      sellerId = user.sub;
+    }
+
     const data = await listProperties({
+      sellerId,
       name: url.searchParams.get("name") || undefined,
       city: url.searchParams.get("city") || undefined,
       categoryId: toNum(url.searchParams.get("categoryId")),
