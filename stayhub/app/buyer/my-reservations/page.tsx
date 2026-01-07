@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
-import type { ReservationItem } from "@/types/reservationItem";
-import type { ReservationStatus } from "@/types/reservationStatus";
+import type { ReservationItem } from "@/client/types/reservationItem";
+import type { ReservationStatus } from "@/client/types/reservationStatus";
 
 type ApiResponse = { items?: ReservationItem[]; error?: string };
 

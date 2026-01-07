@@ -1,4 +1,4 @@
-import Slider from "@/components/Slider";
+import Slider from "@/client/components/Slider";
 import Link from "next/link";
 
 function Icon({ children }: { children: React.ReactNode }) {
@@ -9,7 +9,7 @@ function Icon({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function SellerHomePage() {
+export default function AdminHomePage() {
   const slides = [
     "/slides/slide1.jpg",
     "/slides/slide2.jpg",
@@ -36,46 +36,39 @@ export default function SellerHomePage() {
             <div>
               <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white/70">
                 <span className="h-2 w-2 rounded-full bg-[#ff2d55]" />
-                Seller workspace. Manage listings.
+                Admin workspace. System overview.
               </div>
 
               <h1 className="mt-4 text-4xl font-semibold leading-[1.08] tracking-tight md:text-5xl">
-                Manage your properties with ease.
+                Admin control center.
               </h1>
 
               <p className="mt-4 max-w-xl text-base text-white/70 md:text-lg">
-                Create, edit and remove your listings - and keep reservations under control with quick status updates.
+                All admin capabilities are available through the dashboard. Monitor activity, review key metrics and keep the platform running smoothly.
               </p>
 
               <div className="mt-7 flex flex-wrap gap-3">
                 <Link
-                  href="/seller/my-properties"
+                  href="/admin/dashboard"
                   className="group inline-flex items-center justify-center gap-2 rounded-2xl bg-[#ff2d55] px-6 py-3 font-semibold text-white shadow-lg shadow-[#ff2d55]/25 hover:opacity-95"
                 >
-                  My properties
-                </Link>
-
-                <Link
-                  href="/seller/manage-reservations"
-                  className="inline-flex items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-6 py-3 font-semibold text-white hover:bg-white/10"
-                >
-                  Manage reservations
+                  Open dashboard
                 </Link>
               </div>
 
               {/* Mini stats */}
               <div className="mt-8 grid grid-cols-3 gap-3">
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs text-white/60">Listing management</p>
-                  <p className="mt-1 text-lg font-semibold">Create.</p>
+                  <p className="text-xs text-white/60">Insights</p>
+                  <p className="mt-1 text-lg font-semibold">Metrics.</p>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs text-white/60">Reservation flow</p>
-                  <p className="mt-1 text-lg font-semibold">Update.</p>
+                  <p className="text-xs text-white/60">Operations</p>
+                  <p className="mt-1 text-lg font-semibold">Control.</p>
                 </div>
                 <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                  <p className="text-xs text-white/60">Secure access</p>
-                  <p className="mt-1 text-lg font-semibold">Guaranteed.</p>
+                  <p className="text-xs text-white/60">Security</p>
+                  <p className="mt-1 text-lg font-semibold">Protected.</p>
                 </div>
               </div>
             </div>
@@ -95,10 +88,10 @@ export default function SellerHomePage() {
           <div className="group rounded-[22px] border border-white/10 bg-slate-900/35 p-6 backdrop-blur hover:bg-slate-900/50 transition">
             <div className="flex items-start gap-4">
               <Icon>
-                {/* Home/Listing icon */}
+                {/* Dashboard icon */}
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                   <path
-                    d="M3 11l9-8 9 8v10a1 1 0 0 1-1 1h-5v-7H9v7H4a1 1 0 0 1-1-1V11z"
+                    d="M4 4h7v9H4V4zM13 4h7v5h-7V4zM13 11h7v9h-7v-9zM4 15h7v5H4v-5z"
                     stroke="currentColor"
                     strokeWidth="2"
                     strokeLinejoin="round"
@@ -106,9 +99,9 @@ export default function SellerHomePage() {
                 </svg>
               </Icon>
               <div>
-                <h2 className="text-lg font-semibold">Property control.</h2>
+                <h2 className="text-lg font-semibold">Single entry point.</h2>
                 <p className="mt-2 text-white/70">
-                  Add new listings, update details, pricing and rooms - or remove a property when needed.
+                  Admin functionality is centralized in one place — the dashboard — for a clean and secure workflow.
                 </p>
               </div>
             </div>
@@ -117,20 +110,21 @@ export default function SellerHomePage() {
           <div className="group rounded-[22px] border border-white/10 bg-slate-900/35 p-6 backdrop-blur hover:bg-slate-900/50 transition">
             <div className="flex items-start gap-4">
               <Icon>
-                {/* Calendar icon */}
+                {/* Chart icon */}
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
                   <path
-                    d="M7 3v3M17 3v3M4 8h16M6 6h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2z"
+                    d="M4 19V5M4 19h16M8 16v-5M12 16V8M16 16v-3"
                     stroke="currentColor"
                     strokeWidth="2"
                     strokeLinecap="round"
+                    strokeLinejoin="round"
                   />
                 </svg>
               </Icon>
               <div>
-                <h2 className="text-lg font-semibold">Reservation updates.</h2>
+                <h2 className="text-lg font-semibold">Overview & metrics.</h2>
                 <p className="mt-2 text-white/70">
-                  Review bookings for your listings and set status to Pending, Confirmed or Cancelled.
+                  Quickly inspect platform usage, listings activity and reservations flow through dashboard widgets.
                 </p>
               </div>
             </div>
@@ -150,9 +144,9 @@ export default function SellerHomePage() {
                 </svg>
               </Icon>
               <div>
-                <h2 className="text-lg font-semibold">Guaranteed access.</h2>
+                <h2 className="text-lg font-semibold">Role-protected access.</h2>
                 <p className="mt-2 text-white/70">
-                  Seller actions are protected and available only to authenticated users.
+                  Admin routes are protected and available only to authenticated users with ADMIN role.
                 </p>
               </div>
             </div>
@@ -164,17 +158,17 @@ export default function SellerHomePage() {
           <div className="rounded-[24px] border border-white/10 bg-gradient-to-r from-white/5 via-white/3 to-transparent p-6 md:p-8">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
               <div>
-                <h3 className="text-xl font-semibold">Ready to manage your listings?</h3>
+                <h3 className="text-xl font-semibold">Go to the dashboard.</h3>
                 <p className="mt-2 text-white/70">
-                  Add a new property or review your current reservations in seconds.
+                  Manage and monitor the platform using the centralized admin dashboard.
                 </p>
               </div>
 
               <Link
-                href="/seller/my-properties"
+                href="/admin/dashboard"
                 className="inline-flex items-center justify-center rounded-2xl bg-[#ff2d55] px-6 py-3 font-semibold text-white shadow-lg shadow-[#ff2d55]/25 hover:opacity-95"
               >
-                Go to my properties
+                Open dashboard
               </Link>
             </div>
           </div>

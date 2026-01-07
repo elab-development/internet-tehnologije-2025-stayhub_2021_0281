@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
-import type { MeResponse } from "@/types/meReponse";
+import type { MeResponse } from "@/client/types/meReponse";
 
 function routeByRole(role?: string) {
   const r = (role ?? "").toUpperCase();

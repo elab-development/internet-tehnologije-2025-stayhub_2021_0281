@@ -13,7 +13,7 @@ import {
   Legend,
 } from "recharts";
 
-import type { AdminMetrics } from "@/types/adminMetrics";
+import type { AdminMetrics } from "@/client/types/adminMetrics";
 
 function toNumber(v: unknown) {
   const n = typeof v === "string" ? Number(v) : typeof v === "number" ? v : NaN;

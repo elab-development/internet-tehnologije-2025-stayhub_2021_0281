@@ -3,9 +3,9 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
-import type { ReservationStatus } from "@/types/reservationStatus";
-import type { SellerReservationItem } from "@/types/sellerReservationItem";
-import type { SellerReservationsResponse } from "@/types/sellerReservationsResponse";
+import type { ReservationStatus } from "@/client/types/reservationStatus";
+import type { SellerReservationItem } from "@/client/types/sellerReservationItem";
+import type { SellerReservationsResponse } from "@/client/types/sellerReservationsResponse";
 
 function safeDate(iso: string) {
   const d = new Date(iso);

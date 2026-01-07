@@ -1,12 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
 
-import Card from "@/components/Card";
+import Card from "@/client/components/Card";
 
-import type { PropertyItem } from "@/types/propertyItem";
-import type { PropertiesResponse } from "@/types/propertiesResponse";
+import type { PropertyItem } from "@/client/types/propertyItem";
+import type { PropertiesResponse } from "@/client/types/propertiesResponse";
 
 function money(v: string | number) {
   const n = typeof v === "string" ? Number(v) : v;

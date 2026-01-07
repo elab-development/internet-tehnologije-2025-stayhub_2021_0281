@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Card from "@/components/Card";
+import Card from "@/client/components/Card";
 
-import { Category } from "@/types/category";
+import { Category } from "@/client/types/category";
 
-import { PropertiesResponse } from "@/types/propertiesResponse";
+import { PropertiesResponse } from "@/client/types/propertiesResponse";
 
 const PAGE_SIZE = 6;
 
