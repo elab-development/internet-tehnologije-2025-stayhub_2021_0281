@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 
-import type { MeResponse } from "@/types/meReponse";
+import type { MeResponse } from "@/client/types/meReponse";
 
 function initialsFromName(name?: string | null) {
   const safe = (name ?? "").trim();

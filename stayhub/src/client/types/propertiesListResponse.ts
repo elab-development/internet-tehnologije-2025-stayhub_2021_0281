@@ -1,4 +1,4 @@
-import type { FeaturedItem } from "@/types/featuredItem";
+import type { FeaturedItem } from "@/client/types/featuredItem";
 
 export type PropertiesListResponse = {
   page: number;

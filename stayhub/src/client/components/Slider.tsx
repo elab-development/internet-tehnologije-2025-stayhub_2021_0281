@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
-import type { SliderProps } from "@/types/slider";
+import type { SliderProps } from "@/client/types/slider";
 
 export default function Slider({ images, autoPlayMs = 2500 }: SliderProps) {
   const safeImages = useMemo(() => images?.filter(Boolean) ?? [], [images]);

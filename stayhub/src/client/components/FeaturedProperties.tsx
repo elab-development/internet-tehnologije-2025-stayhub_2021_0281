@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import Card from "@/components/Card";
+import Card from "@/client/components/Card";
 
-import type { FeaturedItem } from "@/types/featuredItem";
+import type { FeaturedItem } from "@/client/types/featuredItem";
 
 type FeaturedPropertiesProps = {
   items: FeaturedItem[];

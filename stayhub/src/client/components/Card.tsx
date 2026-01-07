@@ -1,6 +1,6 @@
 "use client";
 
-import type { CardProps } from "@/types/cardProps";
+import type { CardProps } from "@/client/types/cardProps";
 
 export default function Card({
   title,
