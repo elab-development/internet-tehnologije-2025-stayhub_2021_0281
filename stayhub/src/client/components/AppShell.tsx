@@ -1,7 +1,7 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import NavigationMenu from "@/components/NavigationMenu";
+import NavigationMenu from "@/client/components/NavigationMenu";
 import Footer from "./Footer";
 
 export default function AppShell({ children }: { children: React.ReactNode }) {
