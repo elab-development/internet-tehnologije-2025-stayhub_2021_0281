@@ -168,7 +168,8 @@ async function main() {
     const property = pick(properties);
 
     // Faker generiše startDate u bliskoj budućnosti, a endDate se dobija dodavanjem broja noćenja.
-    const start = faker.date.soon({ days: 30 });
+    const DAYS_OPTIONS = [30, 60, 90, 120];
+    const start = faker.date.soon({ days: pick(DAYS_OPTIONS) });
     const nights = randInt(1, 7);
     const end = addDays(start, nights);
 
