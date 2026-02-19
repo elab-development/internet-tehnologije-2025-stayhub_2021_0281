@@ -6,14 +6,18 @@ import { requireRole } from "@/server/auth/requireRole";
 import { updatePropertySchema } from "@/server/validators/property";
 import { getPropertyById, updateProperty, deleteProperty } from "@/server/services/properties.service";
 
-function parseId(params: { id: string }) {
-  const id = Number(params.id);
-  return Number.isInteger(id) && id > 0 ? id : null;
+function parseId(raw: string) {
+  const n = Number(raw);
+  return Number.isInteger(n) && n > 0 ? n : null;
 }
 
-export async function GET(_: Request, { params }: { params: { id: string } }) {
+export async function GET(
+  _: Request,
+  ctx: { params: Promise<{ id: string }> }
+) {
   try {
-    const id = parseId(params);
+    const { id: idRaw } = await ctx.params; // ✅ await params
+    const id = parseId(idRaw);
     if (!id) return fail("Nevalidan id.", 400);
 
     const item = await getPropertyById(id);
@@ -25,12 +29,16 @@ export async function GET(_: Request, { params }: { params: { id: string } }) {
   }
 }
 
-export async function PATCH(req: Request, { params }: { params: { id: string } }) {
+export async function PATCH(
+  req: Request,
+  ctx: { params: Promise<{ id: string }> }
+) {
   try {
     const user = await requireAuth();
     requireRole(user.role, ["SELLER"]);
 
-    const id = parseId(params);
+    const { id: idRaw } = await ctx.params; // ✅ await params
+    const id = parseId(idRaw);
     if (!id) return fail("Nevalidan id.", 400);
 
     const body = await req.json();
@@ -46,12 +54,16 @@ export async function PATCH(req: Request, { params }: { params: { id: string } }
   }
 }
 
-export async function DELETE(_: Request, { params }: { params: { id: string } }) {
+export async function DELETE(
+  _: Request,
+  ctx: { params: Promise<{ id: string }> }
+) {
   try {
     const user = await requireAuth();
     requireRole(user.role, ["SELLER"]);
 
-    const id = parseId(params);
+    const { id: idRaw } = await ctx.params; // ✅ await params
+    const id = parseId(idRaw);
     if (!id) return fail("Nevalidan id.", 400);
 
     const result = await deleteProperty(user.sub, id);
