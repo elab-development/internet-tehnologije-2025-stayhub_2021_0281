@@ -1,10 +1,10 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+
 import Card from "@/client/components/Card";
-
 import { Category } from "@/client/types/category";
-
 import { PropertiesResponse } from "@/client/types/propertiesResponse";
 
 const PAGE_SIZE = 6;
@@ -15,6 +15,8 @@ function toQueryNumber(v: string) {
 }
 
 export default function BuyerPropertiesPage() {
+  const router = useRouter();
+
   // Filter inputs.
   const [name, setName] = useState("");
   const [city, setCity] = useState("");
@@ -328,7 +330,7 @@ export default function BuyerPropertiesPage() {
                 priceText={`€${p.price}/night`}
                 metaRight={p.category.name}
                 badge={p.category.name}
-                onDetailsClick={() => {}}
+                onDetailsClick={() => router.push(`/buyer/property-details?id=${p.id}`)}
               />
             ))
           ) : (
