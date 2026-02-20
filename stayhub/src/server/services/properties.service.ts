@@ -88,17 +88,16 @@ export async function listProperties(q: PropertyListQuery) {
   return { page, pageSize, total, items };
 }
 
-export async function getPropertyById(id: number) {
+export async function getPropertyById(id: number | string) {
+  const n = typeof id === "string" ? Number(id) : id;
+  if (!Number.isInteger(n) || n <= 0) return null;
+
   return prisma.property.findUnique({
-    where: { id },
-    include: {
-      location: true,
-      category: true,
-      seller: { select: { id: true, name: true } },
-      reservations: true,
-    },
+    where: { id: n },
+    include: { location: true, category: true, seller: { select: { id: true, name: true } }, reservations: true },
   });
 }
+
 
 export async function createProperty(sellerId: number, input: CreatePropertyInput) {
   // Validacija postojanja kategorije (zahtev).

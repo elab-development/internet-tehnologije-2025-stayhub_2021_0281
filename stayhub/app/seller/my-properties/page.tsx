@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import Card from "@/client/components/Card";
 
@@ -14,6 +15,7 @@ function money(v: string | number) {
 }
 
 export default function SellerMyPropertiesPage() {
+  const router = useRouter();
   const [items, setItems] = useState<PropertyItem[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -131,7 +133,10 @@ export default function SellerMyPropertiesPage() {
                   priceText={money(p.price)}
                   metaLeft={p.location?.city ?? "—"}
                   metaRight={`${p.rooms} rooms`}
-                  onDetailsClick={() => {}}
+                  onDetailsClick={() => {
+                    if (!p.id) return;
+                    router.push(`/seller/property-details?id=${encodeURIComponent(String(p.id))}`);
+                  }}
                 />
               ))}
             </div>

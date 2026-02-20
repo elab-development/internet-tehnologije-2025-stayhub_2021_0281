@@ -6,7 +6,7 @@
     "seed": "node prisma/seed.js"
   },
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev --webpack",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
@@ -15,9 +15,11 @@
     "@prisma/client": "^6.19.0",
     "bcrypt": "^6.0.0",
     "jsonwebtoken": "^9.0.3",
+    "leaflet": "^1.9.4",
     "next": "16.1.1",
     "react": "19.2.3",
     "react-dom": "19.2.3",
+    "react-leaflet": "^5.0.0",
     "recharts": "^3.6.0",
     "zod": "^4.3.4"
   },
