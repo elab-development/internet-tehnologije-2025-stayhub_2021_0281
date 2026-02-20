@@ -2,7 +2,7 @@
 
 StayHub je full-stack veb aplikacija za izdavanje i rezervaciju nekretnina. Sistem je organizovan po ulogama (role-based UI i API dozvole) i omogućava pregled nekretnina, detalje sa mapom i 360° prikazom, kreiranje i upravljanje rezervacijama, kao i administrativne izveštaje i metrike.
 
-![StayHub Logo](./stayhub/public/StayHub%20logo%20-%20big.png)
+![StayHub Logo](./stayhub/public/StayHub%20logo%20-%20small.png)
 
 > Struktura repozitorijuma (jedan Next.js projekat).
 > - `app/` — Next.js App Router (stranice + API rute).
