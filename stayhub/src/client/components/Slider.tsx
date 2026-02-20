@@ -1,3 +1,4 @@
+//Slider komponenta za prikazivanje slika u obliku slidera. Prima niz slika i opcionalno vreme automatskog menjanja slika. Koristi useEffect za postavljanje intervala koji menja indeks trenutne slike, i useMemo za filtriranje nevalidnih slika. Ako nema slika, prikazuje poruku "No images". Ako ima više slika, prikazuje tačke ispod slidera koje omogućavaju ručno menjanje slike.
 "use client";
 
 import Image from "next/image";
