@@ -1,0 +1,46 @@
+{
+  "name": "eazy-properties",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "mikro:migration:create": "mikro-orm migration:create",
+    "mikro:migration:up": "mikro-orm migration:up",
+    "mikro:migration:down": "mikro-orm migration:down",
+    "mikro:migration:fresh": "mikro-orm migration:fresh --seed",
+    "mikro:seed": "mikro-orm seeder:run"
+  },
+  "dependencies": {
+    "@mikro-orm/core": "^7.0.17",
+    "@mikro-orm/decorators": "^7.0.17",
+    "@mikro-orm/migrations": "^7.0.17",
+    "@mikro-orm/postgresql": "^7.0.17",
+    "@mikro-orm/seeder": "^7.0.17",
+    "bcryptjs": "^3.0.3",
+    "chart.js": "^4.5.1",
+    "dotenv": "^17.4.2",
+    "jsonwebtoken": "^9.0.3",
+    "lottie-react": "^2.4.1",
+    "next": "16.2.6",
+    "react": "19.2.4",
+    "react-chartjs-2": "^5.3.1",
+    "react-dom": "19.2.4",
+    "reflect-metadata": "^0.2.2"
+  },
+  "devDependencies": {
+    "@mikro-orm/cli": "^7.0.17",
+    "@tailwindcss/postcss": "^4",
+    "@types/jsonwebtoken": "^9.0.10",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.2.6",
+    "tailwindcss": "^4",
+    "tsx": "^4.22.3",
+    "typescript": "^5"
+  }
+}
