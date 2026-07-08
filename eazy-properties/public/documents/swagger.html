@@ -1,0 +1,217 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>EazyProperties API Docs</title>
+
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css"
+    />
+
+    <style>
+      :root {
+        --purple: #6a00ff;
+        --purple-dark: #210046;
+        --purple-soft: #f2e9ff;
+        --orange: #ff7a00;
+        --bg: #faf7ff;
+        --border: rgba(106, 0, 255, 0.16);
+        --text: #171027;
+        --muted: #776b8f;
+      }
+
+      body {
+        margin: 0;
+        background:
+          radial-gradient(circle at top left, rgba(255, 122, 0, 0.14), transparent 30%),
+          radial-gradient(circle at top right, rgba(106, 0, 255, 0.18), transparent 34%),
+          linear-gradient(135deg, #faf7ff, #fffaf6);
+        color: var(--text);
+        font-family: Arial, Helvetica, sans-serif;
+      }
+
+      .docs-header {
+        background: rgba(255, 255, 255, 0.88);
+        border-bottom: 1px solid var(--border);
+        padding: 18px 36px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        backdrop-filter: blur(18px);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+      }
+
+      .docs-brand {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+      }
+
+      .docs-brand img {
+        width: 180px;
+        max-height: 60px;
+        object-fit: contain;
+      }
+
+      .docs-brand strong {
+        color: var(--purple-dark);
+        font-size: 18px;
+      }
+
+      .docs-badge {
+        background: var(--purple-soft);
+        color: var(--purple);
+        padding: 8px 14px;
+        border-radius: 999px;
+        font-size: 13px;
+        font-weight: 900;
+      }
+
+      #swagger-ui {
+        max-width: 1180px;
+        margin: 0 auto;
+        padding: 28px;
+      }
+
+      .swagger-ui .topbar {
+        display: none;
+      }
+
+      .swagger-ui .info {
+        background: rgba(255, 255, 255, 0.92);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 28px;
+        box-shadow: 0 18px 50px rgba(56, 20, 110, 0.1);
+      }
+
+      .swagger-ui .info .title {
+        color: var(--purple) !important;
+        font-size: 34px !important;
+      }
+
+      .swagger-ui .info p,
+      .swagger-ui .info li {
+        color: var(--muted) !important;
+      }
+
+      .swagger-ui .scheme-container {
+        background: rgba(255, 255, 255, 0.92) !important;
+        border: 1px solid var(--border);
+        border-radius: 18px;
+        box-shadow: none !important;
+      }
+
+      .swagger-ui .opblock-tag {
+        color: var(--purple-dark) !important;
+        font-size: 24px !important;
+        border-bottom: 1px solid var(--border) !important;
+      }
+
+      .swagger-ui .opblock {
+        border-radius: 18px !important;
+        overflow: hidden;
+        box-shadow: 0 12px 32px rgba(56, 20, 110, 0.08);
+      }
+
+      .swagger-ui .opblock.opblock-get {
+        border-color: var(--purple) !important;
+        background: rgba(106, 0, 255, 0.05) !important;
+      }
+
+      .swagger-ui .opblock.opblock-post {
+        border-color: #8b2cff !important;
+        background: rgba(139, 44, 255, 0.06) !important;
+      }
+
+      .swagger-ui .opblock.opblock-put {
+        border-color: var(--orange) !important;
+        background: rgba(255, 122, 0, 0.06) !important;
+      }
+
+      .swagger-ui .opblock.opblock-delete {
+        border-color: #e63946 !important;
+        background: rgba(230, 57, 70, 0.06) !important;
+      }
+
+      .swagger-ui .btn.execute {
+        background: var(--purple) !important;
+        border-color: var(--purple) !important;
+        color: #ffffff !important;
+        border-radius: 12px !important;
+      }
+
+      .swagger-ui .btn.authorize {
+        background: var(--purple-soft) !important;
+        color: var(--purple) !important;
+        border-color: var(--purple-soft) !important;
+        border-radius: 12px !important;
+      }
+
+      .swagger-ui input,
+      .swagger-ui textarea,
+      .swagger-ui select {
+        border-radius: 12px !important;
+        border: 1px solid var(--border) !important;
+      }
+
+      .swagger-ui table tbody tr td {
+        border-color: var(--border) !important;
+      }
+
+      .swagger-ui .model-box,
+      .swagger-ui section.models {
+        background: #ffffff !important;
+        border-radius: 18px !important;
+        border-color: var(--border) !important;
+      }
+
+      @media (max-width: 700px) {
+        .docs-header {
+          flex-direction: column;
+          align-items: flex-start;
+          gap: 12px;
+          padding: 16px;
+        }
+
+        #swagger-ui {
+          padding: 16px;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <header class="docs-header">
+      <div class="docs-brand">
+        <img src="/logoSizeL.png" alt="EazyProperties logo" />
+        <strong>EazyProperties API Documentation - LIST OF ALL OF THE ROUTES</strong>
+      </div>
+    </header>
+
+    <div id="swagger-ui"></div>
+
+    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+    <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
+
+    <script>
+      window.onload = () => {
+        window.ui = SwaggerUIBundle({
+          url: "/documents/openapi.yaml",
+          dom_id: "#swagger-ui",
+          presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+          layout: "BaseLayout",
+          deepLinking: true,
+          requestInterceptor: (request) => {
+            request.credentials = "include";
+            return request;
+          },
+        });
+      };
+    </script>
+  </body>
+</html>

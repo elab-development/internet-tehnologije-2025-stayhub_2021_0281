@@ -1,0 +1,1079 @@
+openapi: 3.0.3
+
+info:
+  title: EazyProperties API
+  version: 1.0.0
+  description: >
+    OpenAPI documentation for the EazyProperties fullstack Next.js property
+    management application. The app uses Next.js API routes, MikroORM,
+    PostgreSQL, HttpOnly cookie authentication, role-based access and external
+    public API integrations. After login, Swagger UI sends the cookie token
+    automatically through requestInterceptor credentials include.
+
+servers:
+  - url: http://localhost:3000
+    description: Local development server
+
+tags:
+  - name: Auth
+    description: Authentication and current user routes.
+  - name: Users
+    description: Admin-only user CRUD routes.
+  - name: Properties
+    description: Property listing and property CRUD routes.
+  - name: Property Images
+    description: Extra property image CRUD routes.
+  - name: Reservations
+    description: Reservation CRUD routes.
+  - name: Reviews
+    description: Review CRUD routes.
+  - name: Admin Analytics
+    description: Admin-only analytics route.
+  - name: External APIs
+    description: Geoapify and Electricity Maps integrations.
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: token
+
+  schemas:
+    ApiError:
+      type: object
+      properties:
+        message:
+          type: string
+          example: Forbidden.
+      required:
+        - message
+
+    Role:
+      type: string
+      enum:
+        - ADMIN
+        - AGENT
+        - CLIENT
+
+    ReservationStatus:
+      type: string
+      enum:
+        - PENDING
+        - APPROVED
+        - REJECTED
+        - CANCELLED
+
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        name:
+          type: string
+          example: Marta Mladenović
+        email:
+          type: string
+          format: email
+          example: marta@example.com
+        role:
+          $ref: "#/components/schemas/Role"
+        createdAt:
+          type: string
+          format: date-time
+
+    Agent:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 2
+        name:
+          type: string
+          example: Stefan Kostić
+        email:
+          type: string
+          format: email
+          example: stefan@example.com
+        role:
+          $ref: "#/components/schemas/Role"
+
+    Client:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 3
+        name:
+          type: string
+          example: Aleksa Obradović
+        email:
+          type: string
+          format: email
+          example: aleksa@example.com
+        role:
+          $ref: "#/components/schemas/Role"
+
+    Property:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        title:
+          type: string
+          example: Modern Apartment in Belgrade
+        description:
+          type: string
+          example: Simple and bright apartment close to the city center.
+        city:
+          type: string
+          example: Belgrade
+        address:
+          type: string
+          example: Knez Mihailova 10
+        price:
+          type: number
+          example: 80
+        imageUrl:
+          type: string
+          example: /home-images/homecard1.jpg
+        panoramaUrl:
+          type: string
+          nullable: true
+          example: https://pannellum.org/images/alma.jpg
+        model3dUrl:
+          type: string
+          nullable: true
+          example: https://sketchfab.com/models/7575f718657545edacee98f84e41c6a0/embed
+        createdAt:
+          type: string
+          format: date-time
+        agent:
+          $ref: "#/components/schemas/Agent"
+
+    PropertyImage:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        imageUrl:
+          type: string
+          example: /cities/Belgrade.jpg
+        property:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            title:
+              type: string
+              example: Modern Apartment in Belgrade
+            city:
+              type: string
+              example: Belgrade
+            address:
+              type: string
+              example: Knez Mihailova 10
+            price:
+              type: number
+              example: 80
+
+    Reservation:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        startDate:
+          type: string
+          format: date-time
+          example: 2026-08-01T00:00:00.000Z
+        endDate:
+          type: string
+          format: date-time
+          example: 2026-08-05T00:00:00.000Z
+        status:
+          $ref: "#/components/schemas/ReservationStatus"
+        createdAt:
+          type: string
+          format: date-time
+        client:
+          $ref: "#/components/schemas/Client"
+        property:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            title:
+              type: string
+              example: Modern Apartment in Belgrade
+            city:
+              type: string
+              example: Belgrade
+            address:
+              type: string
+              example: Knez Mihailova 10
+            price:
+              type: number
+              example: 80
+            imageUrl:
+              type: string
+              example: /home-images/homecard1.jpg
+
+    Review:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        rating:
+          type: integer
+          example: 5
+        comment:
+          type: string
+          example: Great apartment, very clean and comfortable.
+        createdAt:
+          type: string
+          format: date-time
+        client:
+          $ref: "#/components/schemas/Client"
+        property:
+          type: object
+          properties:
+            id:
+              type: integer
+              example: 1
+            title:
+              type: string
+              example: Modern Apartment in Belgrade
+            city:
+              type: string
+              example: Belgrade
+            address:
+              type: string
+              example: Knez Mihailova 10
+            price:
+              type: number
+              example: 80
+            imageUrl:
+              type: string
+              example: /home-images/homecard1.jpg
+
+    NearbyPlace:
+      type: object
+      properties:
+        name:
+          type: string
+          example: Restaurant Example
+        address:
+          type: string
+          example: Knez Mihailova, Belgrade, Serbia
+        categories:
+          type: array
+          items:
+            type: string
+          example:
+            - catering.restaurant
+        distance:
+          type: number
+          nullable: true
+          example: 342
+
+    ElectricityCarbon:
+      type: object
+      properties:
+        city:
+          type: string
+          example: Belgrade
+        zone:
+          type: string
+          example: RS
+        carbonIntensity:
+          type: number
+          example: 420
+        isEstimated:
+          type: boolean
+          example: false
+        datetime:
+          type: string
+          format: date-time
+        emissionFactorType:
+          type: string
+          example: lifecycle
+
+paths:
+  /api/auth/register:
+    post:
+      tags:
+        - Auth
+      summary: Register a new user.
+      description: Public route. Creates a new user. Public registration normally creates a CLIENT user.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+              properties:
+                name:
+                  type: string
+                  example: New Client
+                email:
+                  type: string
+                  format: email
+                  example: client@example.com
+                password:
+                  type: string
+                  example: password123
+                role:
+                  $ref: "#/components/schemas/Role"
+      responses:
+        "200":
+          description: User registered successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User registered successfully.
+                  data:
+                    $ref: "#/components/schemas/User"
+        "400":
+          description: Missing fields or email already exists.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiError"
+
+  /api/auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login user.
+      description: Logs in user and stores JWT token in HttpOnly cookie.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: marta@example.com
+                password:
+                  type: string
+                  example: password123
+      responses:
+        "200":
+          description: Login successful.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Login successful.
+                  data:
+                    $ref: "#/components/schemas/User"
+        "401":
+          description: Invalid email or password.
+
+  /api/auth/logout:
+    post:
+      tags:
+        - Auth
+      summary: Logout user.
+      description: Removes authentication cookie.
+      responses:
+        "200":
+          description: Logout successful.
+
+  /api/auth/me:
+    get:
+      tags:
+        - Auth
+      summary: Get current user.
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Current user loaded.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/User"
+        "401":
+          description: Not authenticated.
+
+  /api/users:
+    get:
+      tags:
+        - Users
+      summary: Get all users.
+      description: Admin-only route.
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Users loaded successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/User"
+    post:
+      tags:
+        - Users
+      summary: Create user.
+      description: Admin-only route.
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+                - role
+              properties:
+                name:
+                  type: string
+                  example: Stefan Kostić
+                email:
+                  type: string
+                  format: email
+                  example: stefan@example.com
+                password:
+                  type: string
+                  example: password123
+                role:
+                  $ref: "#/components/schemas/Role"
+      responses:
+        "200":
+          description: User created successfully.
+        "403":
+          description: Forbidden.
+
+  /api/users/{id}:
+    get:
+      tags:
+        - Users
+      summary: Get user by ID.
+      description: Admin-only route.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User loaded successfully.
+        "404":
+          description: User not found.
+    put:
+      tags:
+        - Users
+      summary: Update user.
+      description: Admin-only route.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                role:
+                  $ref: "#/components/schemas/Role"
+      responses:
+        "200":
+          description: User updated successfully.
+    delete:
+      tags:
+        - Users
+      summary: Delete user.
+      description: Admin-only route.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: User deleted successfully.
+
+  /api/properties:
+    get:
+      tags:
+        - Properties
+      summary: Get all properties.
+      description: Public route. Returns properties with agent, images, reservations and reviews.
+      responses:
+        "200":
+          description: Properties loaded successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Property"
+    post:
+      tags:
+        - Properties
+      summary: Create property.
+      description: Available to ADMIN and AGENT.
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - description
+                - city
+                - address
+                - price
+                - imageUrl
+              properties:
+                title:
+                  type: string
+                  example: Modern Apartment in Belgrade
+                description:
+                  type: string
+                  example: Simple and bright apartment close to the city center.
+                city:
+                  type: string
+                  example: Belgrade
+                address:
+                  type: string
+                  example: Knez Mihailova 10
+                price:
+                  type: number
+                  example: 80
+                imageUrl:
+                  type: string
+                  example: /home-images/homecard1.jpg
+                panoramaUrl:
+                  type: string
+                  nullable: true
+                  example: https://pannellum.org/images/alma.jpg
+                model3dUrl:
+                  type: string
+                  nullable: true
+                  example: https://sketchfab.com/models/7575f718657545edacee98f84e41c6a0/embed
+      responses:
+        "200":
+          description: Property created successfully.
+        "403":
+          description: Forbidden.
+
+  /api/properties/{id}:
+    get:
+      tags:
+        - Properties
+      summary: Get property by ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Property loaded successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "#/components/schemas/Property"
+    put:
+      tags:
+        - Properties
+      summary: Update property.
+      description: Admin can update any property. Agent can update only own properties.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                description:
+                  type: string
+                city:
+                  type: string
+                address:
+                  type: string
+                price:
+                  type: number
+                imageUrl:
+                  type: string
+                panoramaUrl:
+                  type: string
+                  nullable: true
+                model3dUrl:
+                  type: string
+                  nullable: true
+      responses:
+        "200":
+          description: Property updated successfully.
+    delete:
+      tags:
+        - Properties
+      summary: Delete property.
+      description: Admin can delete any property. Agent can delete only own properties.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Property deleted successfully.
+
+  /api/property-images:
+    get:
+      tags:
+        - Property Images
+      summary: Get all property images.
+      responses:
+        "200":
+          description: Property images loaded successfully.
+    post:
+      tags:
+        - Property Images
+      summary: Create property image.
+      description: Available to ADMIN and AGENT.
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - imageUrl
+                - propertyId
+              properties:
+                imageUrl:
+                  type: string
+                  example: /cities/Paris.jpg
+                propertyId:
+                  type: integer
+                  example: 1
+      responses:
+        "200":
+          description: Property image created successfully.
+
+  /api/property-images/{id}:
+    get:
+      tags:
+        - Property Images
+      summary: Get property image by ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Property image loaded successfully.
+    put:
+      tags:
+        - Property Images
+      summary: Update property image.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - imageUrl
+              properties:
+                imageUrl:
+                  type: string
+      responses:
+        "200":
+          description: Property image updated successfully.
+    delete:
+      tags:
+        - Property Images
+      summary: Delete property image.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Property image deleted successfully.
+
+  /api/reservations:
+    get:
+      tags:
+        - Reservations
+      summary: Get reservations for current user.
+      description: Admin sees all, agent sees reservations for own properties, client sees own reservations.
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Reservations loaded successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Reservation"
+    post:
+      tags:
+        - Reservations
+      summary: Create reservation.
+      description: Client-only route.
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - startDate
+                - endDate
+                - propertyId
+              properties:
+                startDate:
+                  type: string
+                  format: date
+                  example: 2026-08-01
+                endDate:
+                  type: string
+                  format: date
+                  example: 2026-08-05
+                propertyId:
+                  type: integer
+                  example: 1
+      responses:
+        "200":
+          description: Reservation created successfully.
+
+  /api/reservations/{id}:
+    get:
+      tags:
+        - Reservations
+      summary: Get reservation by ID.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Reservation loaded successfully.
+    put:
+      tags:
+        - Reservations
+      summary: Update reservation.
+      description: Client can update dates. Agent can update status. Admin can update all.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                startDate:
+                  type: string
+                  format: date
+                endDate:
+                  type: string
+                  format: date
+                status:
+                  $ref: "#/components/schemas/ReservationStatus"
+      responses:
+        "200":
+          description: Reservation updated successfully.
+    delete:
+      tags:
+        - Reservations
+      summary: Delete reservation.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Reservation deleted successfully.
+
+  /api/reviews:
+    get:
+      tags:
+        - Reviews
+      summary: Get all reviews.
+      responses:
+        "200":
+          description: Reviews loaded successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Review"
+    post:
+      tags:
+        - Reviews
+      summary: Create review.
+      description: Client-only route.
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - rating
+                - comment
+                - propertyId
+              properties:
+                rating:
+                  type: integer
+                  example: 5
+                comment:
+                  type: string
+                  example: Great property.
+                propertyId:
+                  type: integer
+                  example: 1
+      responses:
+        "200":
+          description: Review created successfully.
+
+  /api/reviews/{id}:
+    get:
+      tags:
+        - Reviews
+      summary: Get review by ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Review loaded successfully.
+    put:
+      tags:
+        - Reviews
+      summary: Update review.
+      description: Client can update own review. Admin can update any review.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                rating:
+                  type: integer
+                comment:
+                  type: string
+      responses:
+        "200":
+          description: Review updated successfully.
+    delete:
+      tags:
+        - Reviews
+      summary: Delete review.
+      description: Client can delete own review. Admin can delete any review.
+      security:
+        - cookieAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Review deleted successfully.
+
+  /api/admin/analytics:
+    get:
+      tags:
+        - Admin Analytics
+      summary: Get admin analytics.
+      description: Admin-only route used by the Chart.js analytics dashboard.
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: Analytics loaded successfully.
+        "403":
+          description: Forbidden.
+
+  /api/external/nearby-places:
+    get:
+      tags:
+        - External APIs
+      summary: Get nearby places for a property.
+      description: Uses Geoapify Places API to find useful places near a property.
+      parameters:
+        - name: city
+          in: query
+          required: true
+          schema:
+            type: string
+          example: Belgrade
+        - name: address
+          in: query
+          required: false
+          schema:
+            type: string
+          example: Knez Mihailova 10
+        - name: category
+          in: query
+          required: false
+          schema:
+            type: string
+          example: catering.restaurant
+      responses:
+        "200":
+          description: Nearby places loaded successfully.
+
+  /api/external/electricity-carbon:
+    get:
+      tags:
+        - External APIs
+      summary: Get electricity carbon intensity.
+      description: Uses Electricity Maps API to show current grid carbon intensity for a property location.
+      parameters:
+        - name: city
+          in: query
+          required: false
+          schema:
+            type: string
+          example: Belgrade
+        - name: zone
+          in: query
+          required: false
+          schema:
+            type: string
+          example: RS
+      responses:
+        "200":
+          description: Electricity carbon data loaded successfully.
