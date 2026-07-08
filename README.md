@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="./public/logoSizeL.png" alt="EazyProperties Logo" width="300" />
+  <img src="./logoSizeL.png" alt="EazyProperties Logo" width="300" />
 </p>
 
 # EazyProperties
