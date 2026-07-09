@@ -7,6 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "clean": "node -e \"require('fs').rmSync('.next',{recursive:true,force:true})\"",
+    "dev:clean": "npm run clean && next dev",
     "mikro:migration:create": "mikro-orm migration:create",
     "mikro:migration:up": "mikro-orm migration:up",
     "mikro:migration:down": "mikro-orm migration:down",
