@@ -1,89 +1,43 @@
-<p align="center">
-  <img src="./logoSizeL.png" alt="EazyProperties Logo" width="300" />
-</p>
-
 # EazyProperties
 
-**EazyProperties** je jednostavna fullstack Next.js aplikacija za upravljanje nekretninama.
+**EazyProperties** je fullstack Next.js aplikacija za oglašavanje i iznajmljivanje nekretnina, sa jasno razdvojenim ulogama, ORM slojem nad PostgreSQL bazom i dva eksterna servisa (mesta u blizini i ugljenični intenzitet mreže).
 
-Aplikacija omogućava različitim tipovima korisnika da koriste različite delove sistema. Projekat je napravljen tako da bude jednostavan za razumevanje, lak za objašnjavanje i pogodan za školski/projektni rad.
+Projekat je organizovan tako da su frontend i backend deo istog Next.js projekta (App Router), a pristup stranicama i rutama je uređen kroz proxy sloj i proveru uloge.
 
 ---
 
-## Funkcionalnosti aplikacije
+## Uloge korisnika i mogućnosti
 
-Aplikacija podržava tri tipa korisnika:
+Sistem razlikuje tri uloge, a navigacija i dozvoljene akcije zavise od trenutno prijavljenog korisnika.
 
 ### Admin
 
-Admin može da:
-
-- Pregleda korisnike.
-- Kreira nove korisnike.
-- Menja postojeće korisnike.
-- Briše korisnike.
-- Pregleda analytics dashboard sa grafikonima.
+- Pregleda sve korisnike sistema
+- Kreira nove korisnike
+- Menja postojeće korisnike
+- Briše korisnike
+- Otvara analitički dashboard sa Chart.js grafikonima
 
 ### Agent
 
-Agent može da:
-
-- Pregleda nekretnine.
-- Kreira nove nekretnine.
-- Menja svoje nekretnine.
-- Briše svoje nekretnine.
-- Dodaje dodatne slike za nekretnine.
-- Briše dodatne slike.
-- Pregleda rezervacije za svoje nekretnine.
+- Objavljuje nove nekretnine
+- Menja i briše sopstvene nekretnine
+- Dodaje i uklanja dodatne slike u galeriji
+- Prati rezervacije za svoje nekretnine
 
 ### Client
 
-Client može da:
-
-- Pregleda nekretnine.
-- Vidi detalje nekretnine.
-- Napravi rezervaciju.
-- Menja svoje rezervacije.
-- Briše svoje rezervacije.
-- Kreira recenziju.
-- Menja svoju recenziju.
-- Briše svoju recenziju.
-
----
-
-## Glavne funkcionalnosti
-
-Aplikacija sadrži:
-
-- Autentifikaciju korisnika.
-- Role-based pristup stranicama.
-- CRUD operacije.
-- Reusable komponente.
-- Reusable modal prozor za create i edit forme.
-- 360 prikaz nekretnina.
-- 3D model prikaz nekretnina.
-- Admin analytics dashboard sa Chart.js grafikonima.
-- Swagger/OpenAPI dokumentaciju.
-- Docker podršku.
-- MikroORM i PostgreSQL bazu.
-- Eksterne API integracije.
+- Pregleda ponudu i detalje nekretnine (galerija, 360° panorama, 3D model)
+- Kreira, menja i otkazuje sopstvene rezervacije
+- Ostavlja, menja i briše sopstvene recenzije
 
 ---
 
 ## Tehnologije
 
-Projekat koristi:
+Arhitektura aplikacije i tehnološki stek — od klijentskog sloja, preko proxy zaštite i API ruta, do MikroORM-a, PostgreSQL baze i eksternih servisa — prikazani su na sledećem dijagramu:
 
-- Next.js.
-- React.
-- TypeScript.
-- MikroORM.
-- PostgreSQL.
-- Chart.js.
-- Docker.
-- Swagger UI.
-- Geoapify API.
-- Electricity Maps API.
+![Arhitektura aplikacije EazyProperties](./architecture.png)
 
 ---
 
@@ -135,12 +89,6 @@ seeders/
   DatabaseSeeder.ts
 
 public/
-  logoSizeL.png
-  logoSizeS.png
-  home-images/
-  cities/
-  about-us/
-  animations/
   documents/
     openapi.yaml
     swagger.html
@@ -152,136 +100,54 @@ mikro-orm.config.ts
 
 ---
 
-## Pokretanje aplikacije lokalno
+## Pokretanje lokalno (bez Docker-a)
 
-### 1. Kloniranje projekta
+### Preduslovi
 
-```bash
-git clone <repository-url>
-cd eazy-properties
-```
+Pre pokretanja je potrebno imati instaliran Node.js (verzija 20 ili novija) i pokrenut PostgreSQL server sa praznom bazom pod nazivom `eazy_properties`. Ako ne želiš da instaliraš PostgreSQL lokalno, dovoljno je podići samo bazu iz Docker-a komandom `docker compose up -d db`.
 
-### 2. Instalacija paketa
+### Konfiguracija okruženja
 
-```bash
-npm install
-```
-
-### 3. Podešavanje `.env` fajla
-
-U root folderu kreirati `.env` fajl.
-
-Primer:
+U korenu projekta se kreira `.env` fajl sa konekcijom ka bazi, tajnim ključem za JWT i ključevima eksternih servisa:
 
 ```env
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/eazy_properties"
-
 JWT_SECRET="eazy_properties_secret_key"
-
 GEOAPIFY_API_KEY="your_geoapify_api_key_here"
-
 ELECTRICITY_MAPS_API_KEY="your_electricity_maps_api_key_here"
 ELECTRICITY_MAPS_DEFAULT_ZONE="RS"
 ```
 
-### 4. Pokretanje PostgreSQL baze
+### Instalacija i priprema baze
 
-Potrebno je da PostgreSQL baza bude pokrenuta lokalno.
+Zavisnosti se instaliraju jednom, a šema i početni podaci se dobijaju kroz jednu MikroORM skriptu koja objedinjuje migracije i seed:
 
-Ako koristiš lokalni PostgreSQL, baza treba da se zove:
+```bash
+npm install
+npm run mikro:migration:fresh
+```
+
+Ova skripta iznova kreira tabele i ubacuje tri test naloga (lozinka za sve je `password123`):
 
 ```text
-eazy_properties
+Admin    marta@example.com
+Agent    stefan@example.com
+Client   aleksa@example.com
 ```
 
-Ako koristiš Docker samo za bazu, možeš pokrenuti:
-
-```bash
-docker compose up -d db
-```
-
-### 5. MikroORM migracije
-
-Pokrenuti migracije:
-
-```bash
-npx mikro-orm migration:up
-```
-
-Ili preko npm skripte, ako je dodata u `package.json`:
-
-```bash
-npm run mikro:migration:up
-```
-
-### 6. Seed podaci
-
-Pokrenuti seed:
-
-```bash
-npx mikro-orm seeder:run
-```
-
-Ili preko npm skripte:
-
-```bash
-npm run mikro:seed
-```
-
-Seed kreira tri test korisnika:
-
-```text
-Admin:
-marta@example.com
-password123
-
-Agent:
-stefan@example.com
-password123
-
-Client:
-aleksa@example.com
-password123
-```
-
-### 7. Reset baze, migracije i seed zajedno
-
-Ako želiš čist početak baze:
-
-```bash
-npx mikro-orm migration:fresh --drop-db --seed
-```
-
-Ili ako koristiš npm skriptu:
-
-```bash
-npm run mikro:migration:fresh -- --drop-db
-```
-
-### 8. Pokretanje aplikacije
+### Pokretanje razvojnog servera
 
 ```bash
 npm run dev
 ```
 
-Aplikacija će biti dostupna na:
-
-```text
-http://localhost:3000
-```
+Aplikacija se otvara na `http://localhost:3000`. Ako Turbopack keš napravi problem, keširanje se čisti sa `npm run clean` (ili `npm run dev:clean` za čisto pokretanje).
 
 ---
 
-## Pokretanje aplikacije kroz Docker
+## Pokretanje kroz Docker
 
-Aplikacija može da se pokrene i pomoću Dockera.
-
-Docker pokreće:
-
-- Next.js aplikaciju.
-- PostgreSQL bazu.
-- MikroORM migracije.
-- Seed podatke.
+Docker Compose podiže kompletno okruženje odjednom — Next.js aplikaciju i PostgreSQL bazu — i pri startu automatski izvršava MikroORM migracije i seed.
 
 ### 1. Podešavanje `.env.docker` fajla
 
@@ -291,14 +157,10 @@ Primer:
 
 ```env
 DATABASE_URL="postgresql://postgres:postgres@db:5432/eazy_properties"
-
 JWT_SECRET="eazy_properties_docker_secret_key"
-
 GEOAPIFY_API_KEY="your_geoapify_api_key_here"
-
 ELECTRICITY_MAPS_API_KEY="your_electricity_maps_api_key_here"
 ELECTRICITY_MAPS_DEFAULT_ZONE="RS"
-
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
@@ -310,44 +172,20 @@ Važno: u Docker okruženju se za bazu koristi host `db`, a ne `localhost`.
 docker compose up --build
 ```
 
-Aplikacija će biti dostupna na:
+Aplikacija će biti dostupna na `http://localhost:3000`.
 
-```text
-http://localhost:3000
-```
-
-### 3. Zaustavljanje containera
+### 3. Zaustavljanje i brisanje
 
 ```bash
-docker compose down
-```
-
-### 4. Brisanje containera i baze
-
-Ako želiš da obrišeš i podatke iz baze:
-
-```bash
-docker compose down -v
-```
-
-Nakon toga možeš ponovo pokrenuti:
-
-```bash
-docker compose up --build
+docker compose down       # zaustavlja kontejnere
+docker compose down -v    # zaustavlja i briše podatke iz baze
 ```
 
 ---
 
 ## Pregled baze
 
-MikroORM nema svoj poseban studio kao Prisma Studio.
-
-Za pregled PostgreSQL baze može se koristiti:
-
-- pgAdmin.
-- DBeaver.
-- TablePlus.
-- DataGrip.
+MikroORM nema poseban studio kao Prisma. Za pregled PostgreSQL baze mogu se koristiti pgAdmin, DBeaver, TablePlus ili DataGrip.
 
 Podaci za lokalnu konekciju su najčešće:
 
@@ -359,94 +197,32 @@ Username: postgres
 Password: postgres
 ```
 
-Ako se pgAdmin pokreće iz Docker containera, host baze je:
-
-```text
-db
-```
+Ako se alat povezuje na bazu iz Docker containera, host baze je `db`.
 
 ---
 
 ## API dokumentacija
 
-Swagger dokumentacija se nalazi u folderu:
-
-```text
-public/documents/
-```
-
-Može se otvoriti na adresi:
-
-```text
-http://localhost:3000/documents/swagger.html
-```
-
-OpenAPI fajl se nalazi na:
-
-```text
-public/documents/openapi.yaml
-```
+Swagger/OpenAPI dokumentacija se nalazi u folderu `public/documents/` i može se otvoriti na adresi `http://localhost:3000/documents/swagger.html`. Izvorni OpenAPI opis je u `public/documents/openapi.yaml`.
 
 ---
 
 ## Eksterni API servisi
 
-Aplikacija koristi dva eksterna API servisa.
+Aplikacija koristi dva eksterna servisa, oba pozvana sa serverske strane (ključevi se ne izlažu u pregledaču).
 
 ### Geoapify Places API
 
-Koristi se za prikaz mesta u blizini nekretnine.
-
-Primeri mesta:
-
-- Restorani.
-- Kafići.
-- Supermarketi.
-- Bolnice.
-- Parkovi.
-- Javni prevoz.
-
-Ova funkcionalnost se koristi na stranici detalja nekretnine.
+Prikazuje mesta u blizini nekretnine (restorani, kafići, supermarketi, bolnice, parkovi, javni prevoz) na stranici detalja nekretnine.
 
 ### Electricity Maps API
 
-Koristi se za prikaz carbon intensity podataka za električnu energiju u određenoj zoni.
-
-Primer:
+Prikazuje ugljenični intenzitet (carbon intensity) električne mreže za zonu koja odgovara gradu nekretnine.
 
 ```text
 Current grid intensity: 320 gCO₂e/kWh
 Zone: RS
 ```
-
-Ova funkcionalnost pomaže korisniku da vidi koliko je lokalna električna mreža ekološki čista ili opterećena emisijama.
-
----
-
-## Role-based pristup
-
-Aplikacija prikazuje stranice u navigaciji na osnovu trenutno ulogovanog korisnika.
-
-### Admin vidi:
-
-- Home.
-- Properties.
-- Users CRUD.
-- Analytics.
-
-### Agent vidi:
-
-- Home.
-- Properties.
-- Properties CRUD.
-- Property Images CRUD.
-
-### Client vidi:
-
-- Home.
-- Properties.
-- Reservations CRUD.
-- Reviews CRUD.
 
 ---
 
@@ -511,16 +287,11 @@ PUT    /api/reviews/:id
 DELETE /api/reviews/:id
 ```
 
-### External API rute
+### External i analytics rute
 
 ```text
 GET /api/external/nearby-places
 GET /api/external/electricity-carbon
-```
-
-### Admin analytics ruta
-
-```text
 GET /api/admin/analytics
 ```
 
@@ -528,24 +299,12 @@ GET /api/admin/analytics
 
 ## Baza podataka
 
-Aplikacija koristi PostgreSQL bazu i MikroORM.
-
-Glavni modeli su:
-
-- User.
-- Property.
-- PropertyImage.
-- Reservation.
-- Review.
-
-Ovi modeli su međusobno povezani relacijama.
-
-Primeri relacija:
+Aplikacija koristi PostgreSQL i MikroORM. Domen čini pet povezanih entiteta — User, Property, PropertyImage, Reservation i Review — sa sledećim relacijama:
 
 ```text
-User 1:N Property
-User 1:N Reservation
-User 1:N Review
+User 1:N Property        (agent objavljuje nekretnine)
+User 1:N Reservation     (klijent rezerviše)
+User 1:N Review          (klijent ocenjuje)
 Property 1:N PropertyImage
 Property 1:N Reservation
 Property 1:N Review
@@ -555,79 +314,28 @@ Property 1:N Review
 
 ## Migracije
 
-U projektu postoje tri različita tipa migracija:
+Struktura baze se uvodi kroz tri migracije, svaka sa jasnom namenom:
 
 ### 1. Kreiranje tabela i spoljnih ključeva
 
-Ova migracija kreira osnovne tabele i relacije između njih.
+Kreira tabele `users`, `properties`, `property_images`, `reservations`, `reviews` i strane ključeve između njih (npr. `properties.agent_id -> users.id`, `reservations.property_id -> properties.id`).
 
-Primeri:
+### 2. Podrazumevane vrednosti
 
-```text
-users
-properties
-property_images
-reservations
-reviews
-```
+Dodaje default vrednosti: `users.role = CLIENT`, `properties.price = 0`, `reservations.status = PENDING`, `created_at = now()`.
 
-Takođe dodaje spoljne ključeve kao što su:
+### 3. Jedinstvena ograničenja
 
-```text
-properties.agent_id -> users.id
-reservations.client_id -> users.id
-reservations.property_id -> properties.id
-reviews.client_id -> users.id
-reviews.property_id -> properties.id
-property_images.property_id -> properties.id
-```
-
-### 2. Default ograničenja
-
-Ova migracija dodaje podrazumevane vrednosti.
-
-Primeri:
-
-```text
-users.role default CLIENT
-properties.price default 0
-reservations.status default PENDING
-created_at default now()
-```
-
-### 3. Unique ograničenja
-
-Ova migracija dodaje jedinstvena ograničenja.
-
-Primeri:
-
-```text
-users.email unique
-reservations.client_id + property_id + start_date + end_date unique
-reviews.client_id + property_id unique
-```
+Uvodi unique pravila: jedinstven `users.email`, jedinstvena kombinacija klijent + nekretnina + datumi za rezervaciju i klijent + nekretnina za recenziju.
 
 ---
 
-## MikroORM objašnjenje
+## MikroORM
 
-U aplikaciji je korišćen **MikroORM** kao ORM alat za rad sa PostgreSQL bazom podataka.
-
-MikroORM omogućava:
-
-- Definisanje modela kroz TypeScript entity klase.
-- Definisanje relacija između modela.
-- Rad sa bazom preko EntityManager-a.
-- Kreiranje i izvršavanje migracija.
-- Popunjavanje baze početnim podacima kroz seedere.
-- Jednostavnije izvršavanje CRUD operacija bez pisanja SQL upita u API rutama.
-
-Za razliku od Prisma ORM-a, gde se modeli definišu u `schema.prisma` fajlu, MikroORM koristi TypeScript klase kao entity modele.
+MikroORM je korišćen kao ORM alat nad PostgreSQL bazom. Modeli su definisani kao TypeScript entity klase sa dekoratorima, a rad sa bazom ide preko EntityManager-a — bez ručnog pisanja SQL upita u API rutama. Za razliku od Prisma ORM-a, gde se šema piše u posebnom `schema.prisma` fajlu, MikroORM koristi upravo entity klase kao izvor istine, uz podršku za migracije i seedere.
 
 ---
 
 ## Napomena
-
-Ova aplikacija je napravljena sa ciljem da bude jednostavna, čitljiva i laka za objašnjavanje.
 
 Kod koristi engleske nazive promenljivih i funkcija, dok su komentari u kodu pisani na srpskom jeziku.
