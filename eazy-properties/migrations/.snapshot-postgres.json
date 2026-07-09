@@ -252,6 +252,22 @@
           "enumItems": [],
           "mappedType": "datetime"
         },
+        "custom_claims_allowlist": {
+          "name": "custom_claims_allowlist",
+          "type": "text[]",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": false,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": "'{}'",
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "array"
+        },
         "discovery_cached_at": {
           "name": "discovery_cached_at",
           "type": "timestamptz(6)",
@@ -6150,6 +6166,22 @@
       "name": "messages",
       "schema": "realtime",
       "columns": {
+        "binary_payload": {
+          "name": "binary_payload",
+          "type": "bytea",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "blob"
+        },
         "event": {
           "name": "event",
           "type": "text",
@@ -6313,7 +6345,13 @@
           "unique": true
         }
       ],
-      "checks": [],
+      "checks": [
+        {
+          "name": "messages_payload_exclusive",
+          "definition": "CHECK (((payload IS NULL) OR (binary_payload IS NULL))) NOT VALID",
+          "columnName": "binary_payload"
+        }
+      ],
       "foreignKeys": {},
       "comment": null
     },
@@ -6498,6 +6536,22 @@
           "mappedType": "bigint",
           "generated": "identity"
         },
+        "selected_columns": {
+          "name": "selected_columns",
+          "type": "text[]",
+          "unsigned": false,
+          "autoincrement": false,
+          "primary": false,
+          "nullable": true,
+          "unique": false,
+          "length": null,
+          "precision": null,
+          "scale": null,
+          "default": null,
+          "comment": null,
+          "enumItems": [],
+          "mappedType": "array"
+        },
         "subscription_id": {
           "name": "subscription_id",
           "type": "uuid",
@@ -6541,13 +6595,15 @@
             "subscription_id",
             "entity",
             "filters",
-            "action_filter"
+            "action_filter",
+            "COALESCE(selected_columns, {}::text[])"
           ],
           "composite": true,
           "constraint": false,
-          "keyName": "subscription_subscription_id_entity_filters_action_filter_key",
+          "keyName": "subscription_subscription_id_entity_filters_action_filter_selec",
           "primary": false,
-          "unique": true
+          "unique": true,
+          "expression": "CREATE UNIQUE INDEX subscription_subscription_id_entity_filters_action_filter_selec ON realtime.subscription USING btree (subscription_id, entity, filters, action_filter, COALESCE(selected_columns, '{}'::text[]))"
         }
       ],
       "checks": [],
@@ -8260,7 +8316,13 @@
         "lte",
         "gt",
         "gte",
-        "in"
+        "in",
+        "like",
+        "ilike",
+        "is",
+        "match",
+        "imatch",
+        "isdistinct"
       ]
     },
     "reservation_status": {
