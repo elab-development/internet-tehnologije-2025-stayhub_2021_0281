@@ -7,6 +7,7 @@ type TokenPayload = {
   name: string;
   email: string;
   role: UserRole;
+  exp?: number;
 };
 
 // Stranice koje traže da korisnik bude ulogovan.
@@ -50,9 +51,17 @@ function decodeToken(token: string): TokenPayload | null {
     const base64 = payloadPart.replace(/-/g, "+").replace(/_/g, "/");
 
     // Čitamo payload iz tokena.
-    const decodedPayload = JSON.parse(atob(base64));
+    const decodedPayload = JSON.parse(atob(base64)) as TokenPayload;
 
-    return decodedPayload as TokenPayload;
+    // Ako token ima expiration i istekao je, tretiramo ga kao nevalidan.
+    if (
+      decodedPayload.exp &&
+      decodedPayload.exp < Math.floor(Date.now() / 1000)
+    ) {
+      return null;
+    }
+
+    return decodedPayload;
   } catch {
     return null;
   }
@@ -81,12 +90,47 @@ function isAllowedApiRoute(pathname: string) {
   return allowedApiPrefixes.some((prefix) => pathname.startsWith(prefix));
 }
 
+function clearToken(response: NextResponse) {
+  // Brišemo token cookie kada je nevalidan ili istekao.
+  response.cookies.set("token", "", {
+    maxAge: 0,
+    path: "/",
+  });
+
+  return response;
+}
+
+function redirectToAuth(request: NextRequest) {
+  const response = NextResponse.redirect(new URL("/auth", request.url));
+  return clearToken(response);
+}
+
+function isAllowedOrigin(origin: string | null, request: NextRequest) {
+  if (!origin) {
+    return true;
+  }
+
+  const currentOrigin = request.nextUrl.origin;
+
+  const allowedOrigins = new Set([
+    currentOrigin,
+    "http://localhost:3000",
+    "http://127.0.0.1:3000",
+    "http://0.0.0.0:3000",
+    process.env.NEXT_PUBLIC_APP_URL || "",
+  ]);
+
+  return allowedOrigins.has(origin);
+}
+
 function addCorsHeaders(response: NextResponse, request: NextRequest) {
   const origin = request.headers.get("origin");
   const currentOrigin = request.nextUrl.origin;
 
-  // Ako zahtev dolazi iz iste aplikacije, dozvoljavamo ga.
-  if (!origin || origin === currentOrigin) {
+  // Ako je origin dozvoljen, vraćamo taj origin.
+  if (origin && isAllowedOrigin(origin, request)) {
+    response.headers.set("Access-Control-Allow-Origin", origin);
+  } else {
     response.headers.set("Access-Control-Allow-Origin", currentOrigin);
   }
 
@@ -116,14 +160,22 @@ export function proxy(request: NextRequest) {
     return NextResponse.redirect(new URL("/auth", request.url));
   }
 
-  // Ako je korisnik već ulogovan i ode na auth, šaljemo ga na home.
-  if (pathname === "/auth" && user) {
-    return NextResponse.redirect(new URL("/home", request.url));
+  // Auth stranica uvek treba da može da se otvori.
+  // Ne šaljemo korisnika automatski na /home, jer to pravi problem pri testiranju.
+  if (pathname === "/auth") {
+    const response = NextResponse.next();
+
+    // Ako postoji token, ali nije validan, brišemo ga.
+    if (token && !user) {
+      return clearToken(response);
+    }
+
+    return response;
   }
 
-  // Ako stranica zahteva login, a korisnik nema token, šaljemo ga na auth.
+  // Ako stranica zahteva login, a korisnik nema validan token, šaljemo ga na auth.
   if (isProtectedPage(pathname) && !user) {
-    return NextResponse.redirect(new URL("/auth", request.url));
+    return redirectToAuth(request);
   }
 
   const requiredRoles = getRequiredRoles(pathname);
@@ -136,7 +188,6 @@ export function proxy(request: NextRequest) {
   // CORS zaštita za API rute.
   if (pathname.startsWith("/api")) {
     const origin = request.headers.get("origin");
-    const currentOrigin = request.nextUrl.origin;
 
     // Blokiramo API rute koje nisu deo naše aplikacije.
     if (!isAllowedApiRoute(pathname)) {
@@ -146,8 +197,8 @@ export function proxy(request: NextRequest) {
       );
     }
 
-    // Ako zahtev dolazi sa drugog domena, blokiramo ga.
-    if (origin && origin !== currentOrigin) {
+    // Ako zahtev dolazi sa nedozvoljenog origin-a, blokiramo ga.
+    if (!isAllowedOrigin(origin, request)) {
       return NextResponse.json(
         { message: "CORS blocked: origin is not allowed." },
         { status: 403 }

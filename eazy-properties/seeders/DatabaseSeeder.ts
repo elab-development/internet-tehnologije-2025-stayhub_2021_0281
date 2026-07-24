@@ -10,6 +10,26 @@ import { Review } from "../entities/Review";
 
 export class DatabaseSeeder extends Seeder {
   async run(em: EntityManager): Promise<void> {
+    /*
+      Brišemo stare podatke pre seed-a.
+
+      Ovo sprečava duplicate email grešku, jer se tabela users očisti
+      pre nego što ponovo ubacimo marta@example.com, stefan@example.com
+      i aleksa@example.com.
+
+      RESTART IDENTITY resetuje ID-jeve.
+      CASCADE briše povezane podatke iz tabela koje imaju foreign key veze.
+    */
+    await em.getConnection().execute(`
+      truncate table
+        "reviews",
+        "reservations",
+        "property_images",
+        "properties",
+        "users"
+      restart identity cascade;
+    `);
+
     // Pravimo hash lozinke jer login koristi bcrypt.compare().
     const hashedPassword = await bcrypt.hash("password123", 10);
 

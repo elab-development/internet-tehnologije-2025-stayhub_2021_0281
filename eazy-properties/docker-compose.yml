@@ -45,38 +45,11 @@ services:
     command: >
       sh -c "
       npx mikro-orm migration:up &&
+      npx mikro-orm seeder:run &&
       npm run dev -- --hostname 0.0.0.0
       "
 
     restart: unless-stopped
-
-  seed:
-    build:
-      context: .
-      dockerfile: Dockerfile
-
-    container_name: eazyproperties-seed
-
-    env_file:
-      - .env.docker
-
-    environment:
-      DATABASE_URL: "postgresql://postgres:postgres@db:5432/eazy_properties"
-
-    depends_on:
-      db:
-        condition: service_healthy
-
-    command: >
-      sh -c "
-      npx mikro-orm migration:up &&
-      npx mikro-orm seeder:run
-      "
-
-    profiles:
-      - seed
-
-    restart: "no"
 
 volumes:
   eazyproperties_db_data:
