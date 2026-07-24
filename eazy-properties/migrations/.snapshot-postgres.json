@@ -6345,13 +6345,7 @@
           "unique": true
         }
       ],
-      "checks": [
-        {
-          "name": "messages_payload_exclusive",
-          "definition": "CHECK (((payload IS NULL) OR (binary_payload IS NULL))) NOT VALID",
-          "columnName": "binary_payload"
-        }
-      ],
+      "checks": [],
       "foreignKeys": {},
       "comment": null
     },
