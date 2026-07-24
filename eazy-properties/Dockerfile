@@ -1,5 +1,5 @@
 # Koristimo mali Node.js image.
-FROM node:20-alpine
+FROM node:22-alpine
 
 # Postavljamo radni folder u containeru.
 WORKDIR /app
